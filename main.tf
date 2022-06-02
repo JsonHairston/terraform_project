@@ -2,9 +2,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+
     }
   }
+}
+
+provider "aws" {
+  region = var.region
 }
 
 resource "aws_vpc" "terraform_vpc" {
@@ -53,12 +57,11 @@ resource "aws_internet_gateway" "terraform_igw" {
   }
 }
 
-resource "aws_db_instance" "default" {
+resource "aws_db_instance" "terraform_mysql" {
   allocated_storage    = 10
   engine               = "mysql"
   engine_version       = "5.7"
   instance_class       = "db.t3.micro"
-  name                 = "terraform_db"
   username             = var.db_username
   password             = var.db_password
   parameter_group_name = "default.mysql5.7"
@@ -69,8 +72,8 @@ terraform {
   backend "s3" {
     bucket         = "terra4ormbuck3t"
     key            = "terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform_db"
+    region         = var.region
+    dynamodb_table = "terraform_mysql"
   }
 }
 
